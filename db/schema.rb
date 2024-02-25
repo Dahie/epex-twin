@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_25_061608) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_25_093721) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,6 +23,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_25_061608) do
     t.datetime "ends_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["starts_at", "ends_at", "type"], name: "index_data_records_on_starts_at_and_ends_at_and_type", unique: true
     t.index ["type"], name: "index_data_records_on_type"
   end
 
