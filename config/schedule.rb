@@ -5,7 +5,7 @@ every 2.hours do
 end
 
 every 1.day, at: '1:05 pm' do
-  runner "CatchEpexMarketplaceData.new.perform"
+  runner "CatchEpexMarketplaceData.call"
 end
 
 # Learn more: http://github.com/javan/whenever
