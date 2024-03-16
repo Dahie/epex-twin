@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'base64'
-
 class CatchEpexMarketplaceData < Actor
   def call
     epex_marketplace_data.each do |market_record|
@@ -16,6 +14,6 @@ class CatchEpexMarketplaceData < Actor
   private
 
   def epex_marketplace_data
-    @epex_marketplace_data ||= EpexMarketplaceService.fetch
+    @epex_marketplace_data ||= EpexMarketplaceService.new.fetch
   end
 end
