@@ -1,3 +1,15 @@
+GIT
+  remote: https://github.com/ashphy/mastodon-api.git
+  revision: 69adfb4f6c4fd77874e4a3f6f3e335aecbf3c794
+  ref: 69adfb4
+  branch: master
+  specs:
+    mastodon-api (2.0.0)
+      addressable (~> 2.6)
+      buftok (~> 0)
+      http (~> 5.1)
+      oj (~> 3.7)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -75,30 +87,50 @@ GEM
       minitest (>= 5.1)
       mutex_m
       tzinfo (~> 2.0)
+    addressable (2.8.6)
+      public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
     base64 (0.2.0)
     bigdecimal (3.1.6)
     bootsnap (1.18.3)
       msgpack (~> 1.2)
+    buftok (0.3.0)
     builder (3.2.4)
     byebug (11.1.3)
+    chronic (0.10.2)
     concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
+    crack (1.0.0)
+      bigdecimal
+      rexml
     crass (1.0.6)
     date (3.3.4)
     debug (1.9.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    diff-lcs (1.5.1)
     dockerfile-rails (1.6.5)
       rails (>= 3.0.0)
+    domain_name (0.6.20240107)
     drb (2.2.0)
       ruby2_keywords
     erubi (1.12.0)
+    ffi (1.16.3)
+    ffi-compiler (1.3.2)
+      ffi (>= 1.15.5)
+      rake
     globalid (1.2.1)
       activesupport (>= 6.1)
-    httparty (0.21.0)
-      mini_mime (>= 1.0.0)
-      multi_xml (>= 0.5.2)
+    hashdiff (1.1.0)
+    http (5.2.0)
+      addressable (~> 2.8)
+      base64 (~> 0.1)
+      http-cookie (~> 1.0)
+      http-form_data (~> 2.2)
+      llhttp-ffi (~> 0.5.0)
+    http-cookie (1.0.5)
+      domain_name (~> 0.5)
+    http-form_data (2.3.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
@@ -107,6 +139,9 @@ GEM
       reline (>= 0.4.2)
     json (2.7.1)
     language_server-protocol (3.17.0.3)
+    llhttp-ffi (0.5.0)
+      ffi-compiler (~> 1.0)
+      rake (~> 13.0)
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -119,7 +154,6 @@ GEM
     mini_mime (1.1.5)
     minitest (5.22.2)
     msgpack (1.7.2)
-    multi_xml (0.6.0)
     mutex_m (0.2.0)
     net-imap (0.4.10)
       date
@@ -143,6 +177,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.16.2-x86_64-linux)
       racc (~> 1.4)
+    oj (3.16.3)
+      bigdecimal (>= 3.0)
     parallel (1.24.0)
     parser (3.3.0.5)
       ast (~> 2.4.1)
@@ -150,6 +186,7 @@ GEM
     pg (1.5.5)
     psych (5.1.2)
       stringio
+    public_suffix (5.0.4)
     puma (6.4.2)
       nio4r (~> 2.0)
     racc (1.7.3)
@@ -198,6 +235,23 @@ GEM
     reline (0.4.2)
       io-console (~> 0.5)
     rexml (3.2.6)
+    rspec-core (3.13.0)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-rails (6.0.3)
+      actionpack (>= 6.1)
+      activesupport (>= 6.1)
+      railties (>= 6.1)
+      rspec-core (~> 3.12)
+      rspec-expectations (~> 3.12)
+      rspec-mocks (~> 3.12)
+      rspec-support (~> 3.12)
+    rspec-support (3.13.1)
     rubocop (1.60.2)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
@@ -240,10 +294,17 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.5.0)
+    vcr (6.2.0)
+    webmock (3.23.0)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.1)
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    whenever (1.0.0)
+      chronic (>= 0.6.3)
     zeitwerk (2.6.13)
 
 PLATFORMS
@@ -259,16 +320,20 @@ DEPENDENCIES
   byebug
   debug
   dockerfile-rails (>= 1.6)
-  httparty
+  mastodon-api!
   nokogiri
   pg
   puma (>= 5.0)
   rails (~> 7.1.3, >= 7.1.3.2)
+  rspec-rails
   rubocop-performance
   rubocop-rails
   rubocop-rspec
   service_actor-rails (~> 1)
   tzinfo-data
+  vcr
+  webmock
+  whenever
 
 RUBY VERSION
    ruby 3.2.2p53
