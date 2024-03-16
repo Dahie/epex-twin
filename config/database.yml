@@ -10,13 +10,13 @@ default: &default
 development:
   <<: *default
   database: epex_twin_development
-  
+
 test:
   <<: *default
   host: localhost
   database: epex_twin_test
-  
+
 production:
   <<: *default
   database: epex_twin_production
-  
+
