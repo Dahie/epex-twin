@@ -1,0 +1,72 @@
+name: CI
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: epex_twin_test
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: password
+      DATABASE_HOST: localhost
+
+    steps:
+    - uses: actions/checkout@v4
+    # - name: Set up Redis
+    #   uses: zhulik/redis-action@1.1.0
+    - name: Install Ruby and gems
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+        ruby-version: 3.2.2
+
+    - name: Configure sysctl limits
+      run: |
+        sudo swapoff -a
+        sudo sysctl -w vm.swappiness=1
+        sudo sysctl -w fs.file-max=262144
+        sudo sysctl -w vm.max_map_count=262144
+    - name: Setup DB, Run tests
+      env:
+        DB_PORT: ${{ job.services.postgres.ports[5432] }}
+      run: |
+        bin/rails db:create db:schema:load
+        bundle exec rspec
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: 3.2.2
+      # - name: Security audit dependencies
+      #  uses: andrewmcodes/bundler-audit-action@main
+      # - name: Security audit application code
+      #   uses: devmasx/brakeman-linter-action@v1.0.0
+      #   env:
+      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Lint Ruby files
+        run: bundle exec rubocop --parallel
