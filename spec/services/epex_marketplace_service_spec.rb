@@ -11,6 +11,9 @@ RSpec.describe EpexMarketplaceService do
       "https://www.epexspot.com/en/market-data?market_area=AT&trading_date=#{trading_date.strftime('%Y-%m-%d')}&delivery_date=#{delivery_date.strftime('%Y-%m-%d')}&modality=Auction&sub_modality=DayAhead&technology=&product=60&data_mode=table"
     end
 
+    before { Timecop.freeze(trading_date) }
+    after { Timecop.return }
+
     it 'fetches data from the EPEX marketplace' do
       VCR.use_cassette('epex_fetch_data') do
         expect(HTTP).to receive(:get).with(url).and_call_original
