@@ -26,6 +26,7 @@ group :development, :test do
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
   gem 'rspec-rails'
+  gem 'timecop'
   gem 'vcr'
   gem 'webmock'
 end
