@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class Api::V1::DataController < ApplicationController
+class Api::V1::DataController < Api::V1::ApiController
+  before_action :authenticate_user!
+
   def create
     outcome = CreateDataRecord.result(record_attributes: data_record_params)
 
