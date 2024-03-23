@@ -11,26 +11,37 @@ class CatchGeosphereData < Actor
       value = geosphere_data['features'][0]['properties']['parameters']['cglo']['data'][hour]
       unit = geosphere_data['features'][0]['properties']['parameters']['cglo']['unit']
 
-      GeosphereGlobalRadiationRecord.create!(unit:,
-                                             value:,
-                                             starts_at:,
-                                             ends_at:,
-                                             source: 'geosphere')
+      begin
+        GeosphereGlobalRadiationRecord.create(unit:,
+                                              value:,
+                                              starts_at:,
+                                              ends_at:,
+                                              source: 'geosphere')
+      rescue StandardError => e
+        Rails.logger.debug e.inspect
+      end
 
       value = geosphere_data['features'][0]['properties']['parameters']['ff']['data'][hour]
       unit = geosphere_data['features'][0]['properties']['parameters']['ff']['unit']
 
-      GeosphereWindRecord.create!(unit:,
-                                  value:,
-                                  starts_at:,
-                                  ends_at:,
-                                  source: 'geosphere')
+      begin
+        GeosphereWindRecord.create(unit:,
+                                   value:,
+                                   starts_at:,
+                                   ends_at:,
+                                   source: 'geosphere')
+      rescue StandardError => e
+        Rails.logger.debug e.inspect
+      end
+
+      # TODO: add temperature which affects PV efficiency
+      # TODO add oil price correlance
     end
   end
 
   private
 
   def geosphere_data
-    @geosphere_data ||= HTTParty.get("https://dataset.api.hub.geosphere.at/v1/station/historical/klima-v2-1h?parameters=FF,cglo&station_ids=5935&start=#{starts_at.strftime('%Y-%m-%dT%H:%M')}&end=#{ends_at.strftime('%Y-%m-%dT%H:%M')}")
+    @geosphere_data ||= JSON.parse ::HTTP.get("https://dataset.api.hub.geosphere.at/v1/station/historical/klima-v2-1h?parameters=FF,cglo&station_ids=5935&start=#{starts_at.strftime('%Y-%m-%dT%H:%M')}&end=#{ends_at.strftime('%Y-%m-%dT%H:%M')}").body
   end
 end
