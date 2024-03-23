@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DataRecord < ApplicationRecord
+  validates :type, presence: true
+  validates :value, presence: true
   validates :unit, presence: true
   validates :source, presence: true
 
