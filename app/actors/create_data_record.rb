@@ -7,8 +7,12 @@ class CreateDataRecord < Actor
   def call
     self.data_record = DataRecord.new(record_attributes)
 
+    Rails.logger.debug data_record.inspect
+
     fail!(error: "Invalid record: #{data_record.errors.messages.map{ |m, v| "#{m} #{v.join(', ')}" }.join(', ')}") unless data_record.valid?
 
-    data_record.save
+    Rails.logger.debug data_record.inspect
+
+    data_record.save!
   end
 end
