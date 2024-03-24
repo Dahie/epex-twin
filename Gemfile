@@ -37,3 +37,9 @@ group :development do
 end
 
 gem "dockerfile-rails", ">= 1.6", group: :development
+
+gem "prophet-rb", "~> 0.5.0"
+
+gem "rover-df", "~> 0.3.4"
+
+gem "vega", "~> 0.3.1"
