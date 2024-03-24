@@ -12,14 +12,16 @@ namespace :prophet do
 
         records = DataRecord.where(starts_at: start_time)
 
-        price = records.find { |r| r.is_a?(EpexDataRecord) }
+        price = records.find { |r| r.is_a?(EpexSpotPriceRecord) }
         wind = records.find { |r| r.is_a?(GeosphereWindRecord) }
         radiation = records.find { |r| r.is_a?(GeosphereGlobalRadiationRecord) }
+        temperature = records.find { |r| r.is_a?(GeosphereTemperatureRecord) }
 
-        next unless price && wind && radiation
+        next unless price && wind && radiation && temperature
 
         data << { "ds" => start_time.strftime("%Y-%m-%d %H:%M:%S"),
           "y" => price.value,
+          "temperature" => temperature.value,
           "wind" => wind.value }
         # "radiation" => radiation.value }
       end
@@ -38,28 +40,31 @@ namespace :prophet do
     # model.add_regressor('temperature')
     model.fit(df)
 
-    periods_to_predict = 24 * 7
-    future = model.make_future_dataframe(periods: periods_to_predict, freq: "H")
-
     wind = lambda do |ds|
       (GeosphereWindRecord.find_at_starts_at(ds) || MeteoblueWindForecastRecord.find_at_starts_at(ds) )&.value || 0.0
     end
+    temperature = lambda do |ds|
+      GeosphereTemperatureRecord.find_at_starts_at(ds)&.value || 0.0
+    end
 
+    periods_to_predict = 24 * 7
+    future = model.make_future_dataframe(periods: periods_to_predict, freq: "H")
     future["cap"] = 100.0
     future["floor"] = 0.0
     future["wind"] = future["ds"].map(&wind)
+    future["temperature"] = future["ds"].map(&temperature)
 
     puts future.tail(periods_to_predict)
 
     forecast = model.predict(future)
     puts forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail(periods_to_predict + 24)
 
-    forecast[["ds", 'yhat']].tail(periods_to_predict).to_a.each do |_row|
-      record = EpexSpotForecastRecord.find_or_create_by(starts_at: _row['ds'].round(2),
-                                                        ends_at: _row['ds'] + 1.hour)
+    forecast[["ds", 'yhat']].tail(periods_to_predict).to_a.each do |row|
+      record = EpexSpotForecastRecord.find_or_create_by(starts_at: row['ds'],
+                                                        ends_at: row['ds'] + 1.hour)
       record.update(unit: "ct/kWh",
                     source: 'prophet',
-                    value: _row['yhat'])
+                    value: row['yhat'].round(2))
     end
 
     # m.plot(forecast).savefig("forecast.png")

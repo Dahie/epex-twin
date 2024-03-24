@@ -10,7 +10,7 @@ namespace :epex_twin do
       DataRecord.select(:starts_at).group(:starts_at).map(&:starts_at).each do |start_time|
         records = DataRecord.where(starts_at: start_time)
 
-        price = records.find { |r| r.is_a?(EpexDataRecord) }
+        price = records.find { |r| r.is_a?(EpexSpotPriceRecord) }
         wind = records.find { |r| r.is_a?(GeosphereWindRecord) }
         radiation = records.find { |r| r.is_a?(GeosphereGlobalRadiationRecord) }
 
@@ -24,6 +24,24 @@ namespace :epex_twin do
       end
     end
     File.write("data.csv", output_string)
+  end
+
+  desc 'Export all records to csv'
+  task epex_7d_correlation: [:environment] do
+    output_string = CSV.generate do |csv|
+      csv << %w[ds actual prediction temperature wind]
+      DataRecord.where("starts_at >?", 21.days.ago ).select(:starts_at).group(:starts_at).map(&:starts_at).each do |start_time|
+        records = DataRecord.where(starts_at: start_time)
+
+        actual = records.find { |r| r.is_a?(EpexSpotPriceRecord) || r.is_a?(AwattarSpotPriceRecord) }&.value
+        prediction = records.find { |r| r.is_a?(EpexSpotForecastRecord) }&.value
+        temperature = records.find { |r| r.is_a?(GeosphereTemperatureRecord) }&.value
+        wind = records.find { |r| r.is_a?(GeosphereWindRecord) }&.value
+
+        csv << [start_time.strftime("%Y-%m-%d %H:%M:%S"), actual, prediction, temperature, wind]
+      end
+    end
+    File.write("7d_correlation-#{Time.zone.now}.csv", output_string)
   end
 
   desc 'Migrate data to production'
