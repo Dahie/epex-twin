@@ -8,7 +8,7 @@ namespace :geosphere do
     end_date = Time.zone.today
 
     (start_date..end_date).each do |date|
-      CatchGeosphereData.call(starts_at: date + 1.day)
+      CatchGeosphereData.call(starts_at: date)
       sleep 1
     end
   end

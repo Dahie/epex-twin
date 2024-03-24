@@ -12,11 +12,11 @@ class CatchGeosphereData < Actor
       unit = geosphere_data['features'][0]['properties']['parameters']['cglo']['unit']
 
       begin
-        GeosphereGlobalRadiationRecord.create(unit:,
-                                              value:,
-                                              starts_at:,
-                                              ends_at:,
-                                              source: 'geosphere')
+        GeosphereGlobalRadiationRecord.find_or_create_by(unit:,
+                                                         value:,
+                                                         starts_at:,
+                                                         ends_at:,
+                                                         source: 'geosphere')
       rescue StandardError => e
         Rails.logger.debug e.inspect
       end
@@ -25,23 +25,35 @@ class CatchGeosphereData < Actor
       unit = geosphere_data['features'][0]['properties']['parameters']['ff']['unit']
 
       begin
-        GeosphereWindRecord.create(unit:,
-                                   value:,
-                                   starts_at:,
-                                   ends_at:,
-                                   source: 'geosphere')
+        GeosphereWindRecord.find_or_create_by(unit:,
+                                              value:,
+                                              starts_at:,
+                                              ends_at:,
+                                              source: 'geosphere')
       rescue StandardError => e
         Rails.logger.debug e.inspect
       end
 
-      # TODO: add temperature which affects PV efficiency
-      # TODO add oil price correlance
+      value = geosphere_data['features'][0]['properties']['parameters']['tl']['data'][hour]
+      unit = geosphere_data['features'][0]['properties']['parameters']['tl']['unit']
+
+      begin
+        GeosphereTemperatureRecord.find_or_create_by(unit:,
+                                                     value:,
+                                                     starts_at:,
+                                                     ends_at:,
+                                                     source: 'geosphere')
+      rescue StandardError => e
+        Rails.logger.debug e.inspect
+      end
+
+      # TODO: add oil price correlance
     end
   end
 
   private
 
   def geosphere_data
-    @geosphere_data ||= JSON.parse ::HTTP.get("https://dataset.api.hub.geosphere.at/v1/station/historical/klima-v2-1h?parameters=FF,cglo&station_ids=5935&start=#{starts_at.strftime('%Y-%m-%dT%H:%M')}&end=#{ends_at.strftime('%Y-%m-%dT%H:%M')}").body
+    @geosphere_data ||= JSON.parse ::HTTP.get("https://dataset.api.hub.geosphere.at/v1/station/historical/klima-v2-1h?parameters=FF,cglo,tl&station_ids=5935&start=#{starts_at.strftime('%Y-%m-%dT%H:%M')}&end=#{ends_at.strftime('%Y-%m-%dT%H:%M')}").body
   end
 end
