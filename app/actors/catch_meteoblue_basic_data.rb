@@ -4,26 +4,23 @@ class CatchMeteoblueBasicData < Actor
   def call
     windspeeds = data.dig('data_1h', 'windspeed')
     times = data.dig('data_1h', 'time')
+    temperatures = data.dig('data_1h', 'temperature')
 
     times.each_with_index do |datetime, index|
       starts_at = Time.zone.parse(datetime).strftime('%Y-%m-%d %H:%M:%S')
       ends_at = (Time.zone.parse(datetime) + 1.hour).strftime('%Y-%m-%d %H:%M:%S')
-      value = windspeeds[index]
-      begin
-        MeteoblueWindForecastRecord.create(unit: 'm/s',
-                                           value:,
-                                           starts_at:,
-                                           ends_at:,
-                                           source: 'meteoblue')
-      rescue StandardError => e
-        Rails.logger.debug e.inspect
-      end
+
+      record = MeteoblueWindForecastRecord.find_or_create_by(starts_at:, ends_at:)
+      record.update(unit: 'm/s', value: windspeeds[index], source: 'meteoblue')
+
+      record = MeteoblueTemperatureForecastRecord.find_or_create_by(starts_at:, ends_at:)
+      record.update(unit: '°C', value: temperatures[index], source: 'meteoblue')
     end
   end
 
   private
 
   def data
-    @awattar_data ||= MeteoblueBasicService.fetch
+    @data ||= MeteoblueBasicService.fetch
   end
 end
