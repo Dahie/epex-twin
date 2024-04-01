@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: http://my.meteoblue.com/packages/basic-1h_basic-day?apikey=BN2HvO6GTdL09pXc&lat=48.128&lon=16.22
+    uri: http://my.meteoblue.com/packages/basic-1h_basic-day?apikey=test&lat=48.128&lon=16.22
     body:
       encoding: ASCII-8BIT
       string: ''

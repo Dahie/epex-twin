@@ -3,8 +3,7 @@
 namespace :geosphere do
   desc 'Fetch all daily records since July 2019'
   task fetch_historic: [:environment] do
-    Date.new(2019, 7, 1)
-    start_date = Date.new(2024, 2, 23)
+    start_date = GeosphereWindRecord.order(:starts_at).last.starts_at.to_date || Date.new(2024, 3, 20)
     end_date = Time.zone.today
 
     (start_date..end_date).each do |date|

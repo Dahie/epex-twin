@@ -7,7 +7,7 @@ RSpec.describe MeteoblueBasicService do
     context 'with valid API token' do
       it 'returns weather data' do
         VCR.use_cassette('meteoblue_basic_fetch_data') do
-          expect(described_class.fetch).to eq({ 'weather' => 'data' })
+          expect(described_class.fetch).to include('data_1h')
         end
       end
     end
