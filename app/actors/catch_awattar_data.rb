@@ -5,26 +5,25 @@ class CatchAwattarData < Actor
   input :ends_at, default: Time.zone.now
 
   def call
-    awattar_data['data'].each do |awattar_record|
-      starts_at = Time.zone.at(awattar_record['start_timestamp'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
-      ends_at = Time.zone.at(awattar_record['end_timestamp'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
+    data['data'].each do |awattar_record|
+      starts_at = timestap_to_formatted_string(awattar_record['start_timestamp'])
+      ends_at = timestap_to_formatted_string(awattar_record['end_timestamp'])
       value = awattar_record['marketprice'] * 100 / 1000 # original is EUR/MWh
 
-      begin
-        EpexDataRecord.create(unit: 'ct/kWh',
-                              value:,
-                              starts_at:,
-                              ends_at:,
-                              source: 'awattar')
-      rescue StandardError => e
-        Rails.logger.debug e.inspect
-      end
+      record = AwattarSpotPriceRecord.find_or_create_by(starts_at:, ends_at:)
+      record.update(unit: 'ct/kWh',
+                    value:,
+                    source: 'awattar')
     end
   end
 
   private
 
-  def awattar_data
-    @awattar_data ||= AwattarService.fetch(starts_at, ends_at)
+  def timestap_to_formatted_string(timestamp)
+    Time.zone.at(timestamp / 1000).strftime('%Y-%m-%d %H:%M:%S')
+  end
+
+  def data
+    @data ||= AwattarService.fetch(starts_at, ends_at)
   end
 end

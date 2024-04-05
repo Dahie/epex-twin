@@ -5,24 +5,24 @@ require 'rails_helper'
 RSpec.describe CreateDataRecord do
   describe '#result' do
     context 'with valid record attributes' do
-      let(:valid_attributes) { { type: 'EpexDataRecord', value: 10.0, unit: 'kg', source: 'Source' } }
+      let(:valid_attributes) { { type: 'EpexSpotPriceRecord', value: 10.0, unit: 'kg', source: 'Source' } }
 
       it 'creates a new data record' do
-        expect { described_class.result(record_attributes: valid_attributes) }.to change(EpexDataRecord, :count).by(1)
+        expect { described_class.result(record_attributes: valid_attributes) }.to change(EpexSpotPriceRecord, :count).by(1)
       end
 
       it 'returns a data record' do
         result = described_class.result(record_attributes: valid_attributes)
-        expect(result.data_record).to be_a(EpexDataRecord)
+        expect(result.data_record).to be_a(EpexSpotPriceRecord)
         expect(result.data_record).to be_persisted
       end
     end
 
     context 'with invalid record attributes' do
-      let(:invalid_attributes) { { type: "EpexDataRecord", value: nil, unit: nil, source: nil } }
+      let(:invalid_attributes) { { type: "EpexSpotPriceRecord", value: nil, unit: nil, source: nil } }
 
       it 'does not create a new data record' do
-        expect { described_class.result(record_attributes: invalid_attributes) }.not_to change(EpexDataRecord, :count)
+        expect { described_class.result(record_attributes: invalid_attributes) }.not_to change(EpexSpotPriceRecord, :count)
       end
 
       it 'returns a failure with error message' do
