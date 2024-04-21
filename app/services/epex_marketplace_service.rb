@@ -31,9 +31,8 @@ class EpexMarketplaceService
     table_data = []
 
     table.search('tr').each do |row|
-      row_data = []
-      row.search('th, td').each do |cell|
-        row_data << cell.text.strip
+      row_data = row.search('th, td').map do |cell|
+        cell.text.strip
       end
       table_data << row_data unless row_data.empty?
     end
