@@ -9,7 +9,7 @@ class Api::V1::DataController < Api::V1::ApiController
     if outcome.success?
       render json: outcome.data_record, status: :created
     else
-      render json: { error: outcome.errors }, status: :unprocessable_entity
+      render json: { error: outcome.error }, status: :unprocessable_entity
     end
   end
 
